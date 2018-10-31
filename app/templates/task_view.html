@@ -1,0 +1,14 @@
+<!doctype html>
+<h1>Question: {{ task.question }}</h1>
+<form method="post">
+    <input name="answer" type="text" placeholder="answer"/>
+    <input type="submit" value="try"/>
+</form>
+
+<ul>
+{% for hint in hints %}
+    <li><a href="/{{ game_id }}/tasks/{{ task.id }}/hints/{{ hint.id }}">hint</a></li>
+{% endfor %}
+</ul>
+
+<!--@todo form submit by ajax-->

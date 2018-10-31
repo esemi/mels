@@ -1,0 +1,8 @@
+<!doctype html>
+<h1>Games list</h1>
+<ul>
+{% for game in games %}
+    <li><a href="/{{ game.id }}/tasks">{{ game.title }}</a></li>
+{% endfor %}
+</ul>
+

@@ -72,6 +72,9 @@ class Storage:
             return None
         return task[0]
 
+    def fetch_hints(self, task_id:int) -> list:
+        return list(filter(lambda x: x['task_id'] == task_id, self.tasks_hints))
+
     def fetch_hint(self, game_id:int, task_id:int, hint_id:int) -> Optional[dict]:
         task = self.fetch_task(game_id, task_id)
         if not task:

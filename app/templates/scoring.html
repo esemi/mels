@@ -1,0 +1,22 @@
+<!doctype html>
+<h1>Score table for game {{ game_id }}</h1>
+<table>
+    <thead>
+        <tr>
+            <td>Team</td>
+            <td>Resolved tasks</td>
+            <td>Total score (seconds)</td>
+            <td>Penalty (seconds)</td>
+        </tr>
+    </thead>
+{% for row in score_table %}
+    <tr>
+        <td>{{ row.team_title }}</td>
+        <td>{{ row.resolved_task_count }}</td>
+        <td>{{ row.total_score }}</td>
+        <td>{{ row.penalty_score_seconds }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+<!--@todo form submit by ajax-->

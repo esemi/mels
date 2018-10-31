@@ -1,0 +1,9 @@
+<!doctype html>
+<h1>Tasks list (by game {{ game_id }})</h1>
+<a href="/{{ game_id }}/scoring">scoring</a>
+<ul>
+{% for task in tasks %}
+    <li><a href="/{{ game_id }}/tasks/{{ task.id }}">{{ task.question }}</a></li>
+{% endfor %}
+</ul>
+

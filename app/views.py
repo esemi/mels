@@ -2,7 +2,7 @@ import os
 import binascii
 import time
 
-from flask import request, g, jsonify, abort
+from flask import request, g, jsonify, abort, render_template
 
 from app import (app, log_app, get_current_team_id, ajax_response, acl_check, storage)
 
@@ -31,16 +31,15 @@ def after_request(response):
 @app.route('/', methods=['GET'])
 def games():
     games = storage.fetch_games()
-    return jsonify(ajax_response(True, data=games))
+    return render_template('index.html', games=games)
 
 
 @acl_check('tasks')
 @app.route('/<int:game_id>/tasks', methods=['GET'])
 def tasks(game_id: int):
-    # @todo filter by current team id
-    # @todo show only open tasks
+    # @todo show only open tasks for current team
     tasks = storage.fetch_tasks(game_id)
-    return jsonify(ajax_response(True, data=tasks))
+    return render_template('tasks.html', tasks=tasks, game_id=game_id)
 
 
 @acl_check('tasks')
@@ -49,7 +48,8 @@ def task_view(game_id: int, task_id: int):
     task = storage.fetch_task(game_id, task_id)
     if not task:
         abort(404)
-    return jsonify(ajax_response(True, data=task))
+    return render_template('task_view.html', task=task, game_id=game_id, task_id=task_id,
+                           hints=storage.fetch_hints(task_id))
 
 
 @acl_check('tasks')
@@ -78,7 +78,7 @@ def hint_view(game_id: int, task_id: int, hint_id: int):
     if not hint:
         abort(404)
     storage.add_penalty_score(get_current_team_id(), PENALTY_SCORE_BY_HINT_IN_SECONDS)
-    return jsonify(ajax_response(True, data=hint))
+    return render_template('hint_view.html', message=hint['title'])
 
 
 @acl_check('scoring')
@@ -88,5 +88,5 @@ def scoring(game_id: int):
     if not game:
         abort(404)
     score_table = storage.score_table(game_id, game['start_date'])
-    return jsonify(ajax_response(True, data=score_table))
+    return render_template('scoring.html', score_table=score_table, game_id=game_id)
 
