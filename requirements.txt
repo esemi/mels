@@ -1,0 +1,6 @@
+Flask
+gunicorn
+Flask-SQLAlchemy
+SQLAlchemy
+mysqlclient
+requests
