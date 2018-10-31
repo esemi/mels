@@ -30,16 +30,14 @@ def after_request(response):
 @acl_check('games')
 @app.route('/', methods=['GET'])
 def games():
-    games = storage.fetch_games()
-    return render_template('index.html', games=games)
+    return render_template('index.html', games=storage.fetch_games())
 
 
 @acl_check('tasks')
 @app.route('/<int:game_id>/tasks', methods=['GET'])
 def tasks(game_id: int):
     # @todo show only open tasks for current team
-    tasks = storage.fetch_tasks(game_id)
-    return render_template('tasks.html', tasks=tasks, game_id=game_id)
+    return render_template('tasks.html', tasks=storage.fetch_tasks(game_id), game_id=game_id)
 
 
 @acl_check('tasks')
@@ -89,4 +87,3 @@ def scoring(game_id: int):
         abort(404)
     score_table = storage.score_table(game_id, game['start_date'])
     return render_template('scoring.html', score_table=score_table, game_id=game_id)
-

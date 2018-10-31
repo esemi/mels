@@ -1,11 +1,10 @@
-import operator
 from datetime import datetime, timedelta
 
-# @todo add fixture
 from math import ceil
 from typing import Optional
 
 
+# @todo add fixture
 class Storage:
     # @todo persistence
 
@@ -57,25 +56,25 @@ class Storage:
     def fetch_games(self) -> list:
         return self.games
 
-    def fetch_game(self, game_id:int) -> Optional[dict]:
+    def fetch_game(self, game_id: int) -> Optional[dict]:
         game = list(filter(lambda x: x['id'] == game_id, self.games))
         if not game:
             return None
         return game[0]
 
-    def fetch_tasks(self, game_id:int) -> list:
+    def fetch_tasks(self, game_id: int) -> list:
         return list(filter(lambda x: x['game_id'] == game_id, self.tasks))
 
-    def fetch_task(self, game_id:int, task_id:int) -> Optional[dict]:
+    def fetch_task(self, game_id: int, task_id: int) -> Optional[dict]:
         task = list(filter(lambda x: x['game_id'] == game_id and x['id'] == task_id, self.tasks))
         if not task:
             return None
         return task[0]
 
-    def fetch_hints(self, task_id:int) -> list:
+    def fetch_hints(self, task_id: int) -> list:
         return list(filter(lambda x: x['task_id'] == task_id, self.tasks_hints))
 
-    def fetch_hint(self, game_id:int, task_id:int, hint_id:int) -> Optional[dict]:
+    def fetch_hint(self, game_id: int, task_id: int, hint_id: int) -> Optional[dict]:
         task = self.fetch_task(game_id, task_id)
         if not task:
             return None
@@ -89,11 +88,8 @@ class Storage:
         self.teams[index]['penalty_seconds'] += score
 
     def team_task_already_complete(self, team_id: int, task_id: int) -> bool:
-        try:
-            answer = list(filter(lambda x: x['team_id'] == team_id and x['task_id'] == task_id, self.teams_tasks))[0]
-            return True
-        except IndexError:
-            return False
+        answers = list(filter(lambda x: x['team_id'] == team_id and x['task_id'] == task_id, self.teams_tasks))
+        return len(answers) > 0
 
     def task_resolve(self, team_id: int, task_id: int):
         self.teams_tasks.append(dict(team_id=team_id, task_id=task_id, date_complete=datetime.utcnow()))
@@ -101,7 +97,8 @@ class Storage:
     def fetch_resolved_tasks(self, team_id: int, valid_task_ids: set) -> list:
         return list(filter(lambda x: x['team_id'] == team_id and x['task_id'] in valid_task_ids, self.teams_tasks))
 
-    def compute_task_score(self, start_dt: datetime, end_dt: datetime) -> int:
+    @staticmethod
+    def compute_task_score(start_dt: datetime, end_dt: datetime) -> int:
         diff_dt = end_dt - start_dt
         return ceil(diff_dt.total_seconds())
 
@@ -112,7 +109,8 @@ class Storage:
         out = []
         for team in self.teams:
             resolved_tasks = self.fetch_resolved_tasks(team['id'], all_valid_task_ids)
-            resolved_task_score = sum([self.compute_task_score(game_start_time, task['date_complete']) for task in resolved_tasks])
+            resolved_task_score = sum([self.compute_task_score(game_start_time, task['date_complete'])
+                                       for task in resolved_tasks])
             out.append(dict(team_title=team['title'], penalty_score_seconds=team['penalty_seconds'],
                             resolved_task_count=len(resolved_tasks), resolved_task_score=resolved_task_score,
                             total_score=resolved_task_score + team['penalty_seconds']))

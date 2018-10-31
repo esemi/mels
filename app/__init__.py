@@ -47,7 +47,7 @@ def get_current_team_id():
     try:
         return app.config['DEBUG_USER_TEAM_ID']
     except KeyError:
-        # @todo release
+        # @todo auth
         return request.headers.get("X-Mels-User")
 
 
@@ -60,11 +60,11 @@ def acl_check(resource_name):
                 log_app('ACL check failure: not auth team %s' % team_id)
                 abort(403)
 
-            # @todo release
+            # @todo check acl by auth?
             is_allow = True
 
             if not is_allow:
-                log_app('ACL check failure %s %s' % (user_id, resource_name))
+                log_app('ACL check failure %s %s' % (team_id, resource_name))
                 abort(403)
             return f(*args, **kwargs)
 
